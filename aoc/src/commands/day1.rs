@@ -435,7 +435,7 @@ impl Day1 {
 }
 
 impl CommandImpl for Day1 {
-    fn main(&self) -> Result<(), DynError> {
+    fn main(&mut self) -> Result<(), DynError> {
         self.part_two()
     }
 }

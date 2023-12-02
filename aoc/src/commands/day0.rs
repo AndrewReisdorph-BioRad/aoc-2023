@@ -11,7 +11,7 @@ pub struct Day0 {
 }
 
 impl CommandImpl for Day0 {
-    fn main(&self) -> Result<(), DynError> {
+    fn main(&mut self) -> Result<(), DynError> {
         println!("EX: {:?}", self.input);
         Ok(())
     }
