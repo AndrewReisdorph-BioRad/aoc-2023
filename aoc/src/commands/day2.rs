@@ -53,6 +53,102 @@ impl Game {
     }
 }
 
+struct GameIterator<'a> {
+    buffer: &'a [u8],
+    read_idx: usize,
+}
+
+impl<'a> GameIterator<'a> {
+    fn new(buffer: &'a [u8]) -> Self {
+        Self { buffer, read_idx: 0 }
+    }
+
+    fn get_next_number(&mut self) -> u16 {
+        let mut number_slice_start = self.read_idx;
+
+        while self.buffer[self.read_idx].is_ascii_digit() {
+            self.read_idx += 1;
+        }
+
+        let number: u16 = std::str::from_utf8(&self.buffer[number_slice_start..self.read_idx])
+            .unwrap()
+            .parse()
+            .unwrap();
+
+        number
+    }
+}
+
+impl<'a> Iterator for GameIterator<'a> {
+    type Item = Game;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        // Check if we are at the end of the file
+        if self.read_idx >= self.buffer.len() {
+            return None;
+        }
+
+        // Get game number
+        // Move ahead 5 characters to skip the text "Game "
+        self.read_idx += 5;
+
+        let game_number = self.get_next_number();
+
+        // println!("Game number: {game_number}");
+
+        // Move past the colon and space after the game number
+        self.read_idx += 2;
+
+        let mut cube_sets: Vec<CubeSet> = vec![];
+
+        // Read in this games values
+        'outer: loop {
+            let mut cube_set = CubeSet::new();
+
+            loop {
+                let cube_count = self.get_next_number();
+                // Move past space after cube count
+                self.read_idx += 1;
+
+                match self.buffer[self.read_idx] {
+                    b'b' => {
+                        self.read_idx += 4;
+                        cube_set.blue = cube_count as u8;
+                    }
+                    b'r' => {
+                        self.read_idx += 3;
+                        cube_set.red = cube_count as u8;
+                    }
+                    b'g' => {
+                        self.read_idx += 5;
+                        cube_set.green = cube_count as u8;
+                    }
+                    _ => {
+                        panic!("Unexpected color: {}", self.buffer[self.read_idx] as char);
+                    }
+                }
+
+                // Check for a comma or semicolon
+                if self.buffer[self.read_idx] == b',' {
+                    self.read_idx += 2;
+                } else if self.buffer[self.read_idx] == b';' {
+                    cube_sets.push(cube_set);
+                    self.read_idx += 2;
+                    break;
+                } else if (self.buffer[self.read_idx] == b'\n') {
+                    cube_sets.push(cube_set);
+                    self.read_idx += 1;
+                    break 'outer;
+                } else {
+                    panic!("Unexpected character: {}", self.buffer[self.read_idx] as char);
+                }
+            }
+        }
+
+        Some(Game { number: game_number, cube_sets })
+    }
+}
+
 impl Day2 {
     fn part_one(&mut self) {
         let f: File = File::open(self.input.as_path()).unwrap();
@@ -158,6 +254,20 @@ impl Day2 {
         println!("Power sum: {}", power_sum);
     }
 
+    fn part_two_with_iter(&mut self) {
+        let f: File = File::open(self.input.as_path()).unwrap();
+        let mut buffer = vec![];
+        let mut reader = BufReader::new(f);
+        reader.read_to_end(buffer.as_mut()).unwrap();
+
+        let mut power_sum: u64 = 0;
+        for game in GameIterator::new(&buffer) {
+            power_sum += game.get_minimal_cube_set().get_power();
+        }
+
+        println!("Power sum: {}", power_sum);
+    }
+
     fn game_is_possible(&self, cube_sets: &[CubeSet]) -> bool {
         let max_red = 12;
         let max_green = 13;
@@ -256,7 +366,7 @@ impl Day2 {
 
 impl CommandImpl for Day2 {
     fn main(&mut self) -> Result<(), DynError> {
-        self.part_two();
+        self.part_two_with_iter();
         Ok(())
     }
 }
