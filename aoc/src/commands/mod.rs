@@ -5,6 +5,7 @@ pub mod day3;
 pub mod day4;
 pub mod day5a;
 pub mod day5b;
+pub mod day6a;
 
 use std::error::Error;
 
