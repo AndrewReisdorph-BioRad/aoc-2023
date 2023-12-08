@@ -65,3 +65,67 @@ impl fmt::Display for ParseError {
         write!(f, "Error for command: {}", self.msg)
     }
 }
+
+pub struct AsciiReader {
+    buffer: Vec<u8>,
+    index: usize,
+}
+
+impl AsciiReader {
+    pub fn new(buffer: Vec<u8>) -> Self {
+        Self { buffer, index: 0 }
+    }
+
+    pub fn read_next_number(&mut self) -> Option<u64> {
+        if self.index >= self.buffer.len() || self.buffer[self.index] == b'\n' {
+            return None;
+        }
+
+        while self.buffer[self.index] == b' ' {
+            self.index += 1;
+        }
+
+        let mut num: u64 = 0;
+        while self.buffer[self.index].is_ascii_digit() {
+            num *= 10;
+            num += (self.buffer[self.index] - b'0') as u64;
+            self.index += 1;
+        }
+
+        while self.buffer[self.index] == b' ' {
+            self.index += 1;
+        }
+        // *read_idx += 1;
+        Some(num)
+    }
+
+    pub fn read_until(&mut self, char: u8) -> Option<&[u8]> {
+        if self.index >= self.buffer.len() {
+            return None;
+        }
+
+        let start = self.index;
+        while self.buffer[self.index] != char {
+            self.index += 1;
+        }
+        let end = self.index;
+
+        Some(&self.buffer[start..end])
+    }
+
+    pub fn skip(&mut self, amount: usize) {
+        self.index = (self.index + amount).min(self.buffer.len());
+    }
+
+    pub fn eof(&mut self) -> bool {
+        self.index >= self.buffer.len()
+    }
+
+    pub fn next(&mut self, amount: usize) -> &[u8] {
+        let start = self.index;
+        let end = start + amount;
+        self.index = end;
+
+        &self.buffer[start..end]
+    }
+}
