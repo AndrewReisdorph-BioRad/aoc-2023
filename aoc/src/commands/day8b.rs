@@ -151,6 +151,8 @@ impl Solver {
                 // Keep track of where Z's are found
                 if location.2 == 25 {
                     z_step_indices.push(num_steps);
+                    z_cycle_idx.push(num_steps);
+                    break;
                 }
 
                 // println!("{:?}", location);
@@ -167,15 +169,15 @@ impl Solver {
                 }
                 
                 // Check for cycles
-                for (idx, step) in steps.iter().enumerate() {
-                    if step.0 == *location && step.1 == instruction_set.index(){
-                        // println!("{:?}", location);
-                        // println!("Cycle {} <-> {} Length: {} - Z's {z_step_indices:?}", idx, num_steps, num_steps - (idx as u64));
-                        // z_product *= z_step_indices[0] as u64;
-                        z_cycle_idx.push(z_step_indices[0]);
-                        break 'outer;
-                    }
-                }
+                // for (idx, step) in steps.iter().enumerate() {
+                //     if step.0 == *location && step.1 == instruction_set.index(){
+                //         // println!("{:?}", location);
+                //         // println!("Cycle {} <-> {} Length: {} - Z's {z_step_indices:?}", idx, num_steps, num_steps - (idx as u64));
+                //         // z_product *= z_step_indices[0] as u64;
+                //         z_cycle_idx.push(z_step_indices[0]);
+                //         break 'outer;
+                //     }
+                // }
             }
             // println!("{:?}", num_steps - 1);
         }

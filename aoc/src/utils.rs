@@ -76,7 +76,7 @@ impl AsciiReader {
         Self { buffer, index: 0 }
     }
 
-    pub fn read_next_number(&mut self) -> Option<u64> {
+    pub fn read_next_number(&mut self) -> Option<i64> {
         if self.index >= self.buffer.len() || self.buffer[self.index] == b'\n' {
             return None;
         }
@@ -85,15 +85,26 @@ impl AsciiReader {
             self.index += 1;
         }
 
-        let mut num: u64 = 0;
+        let is_negative = if self.buffer[self.index] == b'-' {
+            self.index += 1;
+            true
+        } else {
+            false
+        };
+
+        let mut num: i64 = 0;
         while self.buffer[self.index].is_ascii_digit() {
             num *= 10;
-            num += (self.buffer[self.index] - b'0') as u64;
+            num += (self.buffer[self.index] - b'0') as i64;
             self.index += 1;
         }
 
         while self.buffer[self.index] == b' ' {
             self.index += 1;
+        }
+
+        if is_negative {
+            num = num.wrapping_neg();
         }
         // *read_idx += 1;
         Some(num)
