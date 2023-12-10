@@ -67,8 +67,8 @@ impl fmt::Display for ParseError {
 }
 
 pub struct AsciiReader {
-    buffer: Vec<u8>,
-    index: usize,
+    pub buffer: Vec<u8>,
+    pub index: usize,
 }
 
 impl AsciiReader {
@@ -138,5 +138,17 @@ impl AsciiReader {
         self.index = end;
 
         &self.buffer[start..end]
+    }
+
+    pub fn seek(&mut self, position: usize) {
+        self.index = position;
+    }
+
+    pub fn at(&self, position: usize) -> u8 {
+        self.buffer[position]
+    }
+
+    pub fn len(&self) -> usize {
+        self.buffer.len()
     }
 }
