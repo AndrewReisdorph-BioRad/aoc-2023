@@ -27,12 +27,14 @@ enum SubCommand {
     Day6b(day6b::Day6b),
     Day7a(day7a::Day7a),
     Day7b(day7b::Day7b),
-    Day8a(day8a::Day8a),
-    Day8b(day8b::Day8b),
+    // Day8a(day8a::Day8a),
+    // Day8b(day8b::Day8b),
     Day9a(day9a::Day9a),
     Day9b(day9b::Day9b),
     Day10a(day10a::Day10a),
     Day10b(day10b::Day10b),
+    Day11a(day11a::Day11a),
+    Day11b(day11b::Day11b),
 }
 fn main() -> Result<(), DynError> {
     let mut opts = Opts::parse();
