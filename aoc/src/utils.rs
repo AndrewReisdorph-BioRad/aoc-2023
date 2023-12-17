@@ -99,7 +99,7 @@ impl AsciiReader {
             self.index += 1;
         }
 
-        while self.buffer[self.index] == b' ' {
+        while self.buffer[self.index] == b' ' || self.buffer[self.index] == b',' {
             self.index += 1;
         }
 
