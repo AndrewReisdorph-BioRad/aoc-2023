@@ -110,6 +110,22 @@ impl AsciiReader {
         Some(num)
     }
 
+    pub fn read_to(&mut self, char: u8) -> Option<&[u8]> {
+        if self.index >= self.buffer.len() {
+            return None;
+        }
+
+        let start = self.index;
+        while (self.index < self.buffer.len()) && self.buffer[self.index] != char && self.buffer[self.index] != b'\n'{
+            self.index += 1;
+        }
+        let end = self.index;
+
+        self.index += 1;
+
+        Some(&self.buffer[start..end])
+    }
+
     pub fn read_until(&mut self, char: u8) -> Option<&[u8]> {
         if self.index >= self.buffer.len() {
             return None;
