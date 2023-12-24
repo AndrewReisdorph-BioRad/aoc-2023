@@ -110,6 +110,10 @@ impl AsciiReader {
         Some(num)
     }
 
+    pub fn read_line(&mut self) -> Option<&[u8]> {
+        self.read_to(b'\n')
+    }
+
     pub fn read_to(&mut self, char: u8) -> Option<&[u8]> {
         if self.index >= self.buffer.len() {
             return None;
