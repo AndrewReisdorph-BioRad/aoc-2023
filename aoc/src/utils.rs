@@ -7,6 +7,14 @@ use std::{
     str::FromStr,
 };
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Direction {
+    North,
+    South,
+    East,
+    West,
+}
+
 #[derive(Debug, Clone)]
 pub struct SlurpError {
     line: usize,
